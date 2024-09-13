@@ -132,25 +132,7 @@ compare_data <- function(merged_df) {
   return(merged_df)
 }
 
-filter_dataframe <- function(df) {
-  df %>%
-    arrange(TIVERS, IETESTCD) %>%
-    group_by(IETESTCD) %>%
-    mutate(
-      prev_version = lag(TIVERS),
-      prev_ietestcd = lag(IETESTCD),
-      is_last_version = TIVERS == max(TIVERS)
-    ) %>%
-    ungroup() %>%
-    filter(
-      grepl("[A-Z]$", IETESTCD) |
-      TIVERS == 1 |
-      is.na(prev_version) |
-      (prev_version != TIVERS) |
-      !IETESTCD %in% df$IETESTCD[df$TIVERS == prev_version & df$IETESTCD != prev_ietestcd & df$is_last_version]
-    ) %>%
-    select(-prev_version, -prev_ietestcd, -is_last_version)
-}
+
 
 cleanup_df <- function(combined_df){
 
@@ -160,7 +142,6 @@ combined_df <- combined_df %>%
   combined_df <- combined_df %>%
   arrange(TIVERS, desc(IECAT == "Inclusion"))
   
-combined_df <- filter_dataframe(combined_df)
   return(combined_df) 
 }
 
